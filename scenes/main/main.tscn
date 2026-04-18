@@ -1,45 +1,87 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bqq57dbx4ie86"]
 
-[ext_resource type="Script" path="res://scripts/ui/game_screen.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/ui/hand_wiev.gd" id="2"]
-[ext_resource type="PackedScene" path="res://scenes/ui/TileWiev.tscn" id="3"]
+[ext_resource type="Script" uid="uid://4rkuodh6wafm" path="res://scripts/ui/game_screen.gd" id="1"]
+[ext_resource type="Script" uid="uid://t7ph66wtmmb6" path="res://scripts/ui/table_grid.gd" id="2"]
+[ext_resource type="Script" uid="uid://bsvcpdrxm7c8x" path="res://scripts/ui/hand_wiev.gd" id="3"]
 
-[node name="Main" type="Control"]
+[node name="Main" type="Control" unique_id=1751529659]
+layout_mode = 3
+anchors_preset = 0
 script = ExtResource("1")
 
-[node name="Layout" type="VBoxContainer" parent="."]
+[node name="TopBar" type="HBoxContainer" parent="." unique_id=2109108372]
+layout_mode = 0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 1008.0
+offset_bottom = 44.0
 
-[node name="TopBar" type="HBoxContainer" parent="Layout"]
-
-[node name="RoundLabel" type="Label" parent="Layout/TopBar"]
+[node name="RoundLabel" type="Label" parent="TopBar" unique_id=1036649175]
+layout_mode = 2
 text = "Round: 1"
 
-[node name="TargetScoreLabel" type="Label" parent="Layout/TopBar"]
+[node name="TargetScoreLabel" type="Label" parent="TopBar" unique_id=312239394]
+layout_mode = 2
 text = "Target: 50"
 
-[node name="DeckCountLabel" type="Label" parent="Layout/TopBar"]
+[node name="DeckCountLabel" type="Label" parent="TopBar" unique_id=1381771423]
+layout_mode = 2
 text = "Deck: 0"
 
-[node name="HandContainer" type="HBoxContainer" parent="Layout"]
+[node name="TurnStateLabel" type="Label" parent="TopBar" unique_id=1605482797]
+layout_mode = 2
+text = "Select a tile to discard"
+
+[node name="TableGrid" type="GridContainer" parent="." unique_id=638300974]
+layout_mode = 0
+offset_left = 33.0
+offset_top = 83.0
+offset_right = 459.0
+offset_bottom = 317.0
 script = ExtResource("2")
-tile_scene = ExtResource("3")
 
-[node name="Buttons" type="HBoxContainer" parent="Layout"]
+[node name="HandContainer" type="HBoxContainer" parent="." unique_id=740969435]
+layout_mode = 0
+offset_left = 10.0
+offset_top = 458.0
+offset_right = 1002.0
+offset_bottom = 578.0
+script = ExtResource("3")
 
-[node name="DrawButton" type="Button" parent="Layout/Buttons"]
-text = "Draw"
+[node name="BottomBar" type="HBoxContainer" parent="." unique_id=1314210514]
+layout_mode = 0
+offset_left = 12.0
+offset_top = 592.0
+offset_right = 1004.0
+offset_bottom = 632.0
 
-[node name="SortColorButton" type="Button" parent="Layout/Buttons"]
+[node name="SortColorButton" type="Button" parent="BottomBar" unique_id=481652595]
+layout_mode = 2
 text = "Sort Color"
 
-[node name="SortValueButton" type="Button" parent="Layout/Buttons"]
+[node name="SortValueButton" type="Button" parent="BottomBar" unique_id=1371654614]
+layout_mode = 2
 text = "Sort Value"
 
-[node name="FinishRoundButton" type="Button" parent="Layout/Buttons"]
+[node name="DiscardButton" type="Button" parent="BottomBar" unique_id=1905763215]
+layout_mode = 2
+text = "Discard"
+
+[node name="DrawButton" type="Button" parent="BottomBar" unique_id=1714184126]
+layout_mode = 2
+text = "Draw"
+
+[node name="FinishRoundButton" type="Button" parent="BottomBar" unique_id=1118300111]
+layout_mode = 2
 text = "Finish Round"
 
-[node name="ResultPanel" type="PanelContainer" parent="Layout"]
+[node name="ResultPanel" type="PanelContainer" parent="." unique_id=671114716]
+layout_mode = 0
+offset_left = 832.0
+offset_top = 60.0
+offset_right = 1264.0
+offset_bottom = 1180.0
 
-[node name="ResultLabel" type="RichTextLabel" parent="Layout/ResultPanel"]
+[node name="ResultLabel" type="RichTextLabel" parent="ResultPanel" unique_id=900424107]
+layout_mode = 2
 fit_content = true
-scroll_active = false

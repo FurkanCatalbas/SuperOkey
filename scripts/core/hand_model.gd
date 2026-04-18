@@ -21,6 +21,12 @@ func remove_tile(tile: GameTileData) -> GameTileData:
 		return null
 	return remove_tile_by_id(tile.id)
 
+func has_tile_id(tile_id: String) -> bool:
+	for tile in tiles:
+		if tile.id == tile_id:
+			return true
+	return false
+
 func sort_by_color_then_value() -> void:
 	tiles.sort_custom(func(a, b):
 		if a.is_joker and not b.is_joker:
