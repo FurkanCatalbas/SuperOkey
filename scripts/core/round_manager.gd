@@ -3,10 +3,12 @@ extends RefCounted
 
 enum TurnState { WAITING_FOR_DISCARD, WAITING_FOR_DRAW }
 
+const MAX_TILE_CHANGES := 5
+
 var current_round: int = 1
 var target_score: int = 50
 var turn_state: TurnState = TurnState.WAITING_FOR_DISCARD
-var turn_message: String = "Select a tile to discard"
+var turn_message: String = "Build groups, then discard one tile"
 
 var hand_model := HandModel.new()
 var deck_manager := DeckManager.new()
@@ -15,6 +17,7 @@ var validator := CombinationValidator.new()
 
 var discard_pile: Array = []
 var table_grid: Array = []
+var tile_changes_used: int = 0
 
 func start_round(round_number: int) -> void:
 	current_round = round_number
@@ -29,25 +32,36 @@ func start_round(round_number: int) -> void:
 	var starting_tiles = deck_manager.draw_multiple(GameConstants.STARTING_HAND_SIZE)
 	hand_model.set_tiles(starting_tiles)
 	hand_model.sort_by_color_then_value()
+	score_manager.roll_joker_cards()
+	tile_changes_used = 0
 
 	turn_state = TurnState.WAITING_FOR_DISCARD
-	turn_message = "Select a tile to discard"
+	turn_message = "Build groups, then discard one tile"
 
 func get_turn_state_text() -> String:
 	return turn_message
 
 func can_discard(tile_id: String) -> bool:
-	return turn_state == TurnState.WAITING_FOR_DISCARD and hand_model.has_tile_id(tile_id)
+	return can_change_tile() and hand_model.has_tile_id(tile_id)
+
+func can_change_tile() -> bool:
+	return turn_state == TurnState.WAITING_FOR_DISCARD and tile_changes_used < MAX_TILE_CHANGES
+
+func get_tile_change_count_text() -> String:
+	return "%d/%d" % [tile_changes_used, MAX_TILE_CHANGES]
+
+func can_edit_table() -> bool:
+	return turn_state == TurnState.WAITING_FOR_DISCARD
 
 func discard_tile(tile_id: String) -> GameTileData:
-	if turn_state != TurnState.WAITING_FOR_DISCARD:
+	if not can_change_tile():
 		return null
 	var tile = hand_model.remove_tile_by_id(tile_id)
 	if tile == null:
 		return null
 	discard_pile.append(tile)
 	turn_state = TurnState.WAITING_FOR_DRAW
-	turn_message = "Now draw one tile"
+	turn_message = "Drawing a replacement tile"
 	return tile
 
 func can_draw() -> bool:
@@ -59,12 +73,23 @@ func draw_after_discard() -> GameTileData:
 	var tile = deck_manager.draw_tile()
 	if tile != null:
 		hand_model.add_tile(tile)
+	tile_changes_used += 1
 	turn_state = TurnState.WAITING_FOR_DISCARD
-	turn_message = "Turn completed. Select a tile to discard"
+	turn_message = "Tile change limit reached" if tile_changes_used >= MAX_TILE_CHANGES else "Tile changed. You can change more or finish the stage"
 	return tile
 
+func discard_tile_and_draw(tile_id: String) -> Dictionary:
+	var discarded_tile = discard_tile(tile_id)
+	if discarded_tile == null:
+		return {}
+	var drawn_tile = draw_after_discard()
+	return {
+		"discarded": discarded_tile,
+		"drawn": drawn_tile
+	}
+
 func move_hand_tile_to_table(tile_id: String, row: int, column: int) -> bool:
-	if not _is_valid_cell(row, column) or table_grid[row][column] != null:
+	if not can_edit_table() or not _is_valid_cell(row, column) or table_grid[row][column] != null:
 		return false
 	var tile = hand_model.remove_tile_by_id(tile_id)
 	if tile == null:
@@ -73,7 +98,7 @@ func move_hand_tile_to_table(tile_id: String, row: int, column: int) -> bool:
 	return true
 
 func move_table_tile_to_hand(row: int, column: int) -> bool:
-	if not _is_valid_cell(row, column):
+	if not can_edit_table() or not _is_valid_cell(row, column):
 		return false
 	var tile: GameTileData = table_grid[row][column]
 	if tile == null:
@@ -83,7 +108,7 @@ func move_table_tile_to_hand(row: int, column: int) -> bool:
 	return true
 
 func move_table_tile(from_row: int, from_column: int, to_row: int, to_column: int) -> bool:
-	if not _is_valid_cell(from_row, from_column) or not _is_valid_cell(to_row, to_column):
+	if not can_edit_table() or not _is_valid_cell(from_row, from_column) or not _is_valid_cell(to_row, to_column):
 		return false
 	if from_row == to_row and from_column == to_column:
 		return false
@@ -110,7 +135,7 @@ func get_horizontal_group_infos() -> Array:
 			elif not segment_tiles.is_empty():
 				var group = GroupData.new("Row %d Group %d" % [row + 1, segment_index])
 				group.tiles = segment_tiles.duplicate()
-				var validation = validator.validate_group(group)
+				var validation = score_manager.score_group(group)
 				groups.append({
 					"group": group,
 					"cells": segment_cells.duplicate(),
@@ -128,11 +153,26 @@ func get_group_highlight_map() -> Dictionary:
 			highlight_map[_cell_key(cell.x, cell.y)] = "valid" if info["validation"].is_valid else "invalid"
 	return highlight_map
 
-func finish_round() -> RoundResult:
+func get_live_table_score() -> int:
+	return int(round(get_live_round_result().net_score))
+
+func get_live_table_multiplier() -> float:
+	return get_live_round_result().multiplier
+
+func get_live_round_result() -> RoundResult:
 	var detected_groups: Array = []
 	for info in get_horizontal_group_infos():
 		detected_groups.append(info["group"])
-	var result = score_manager.evaluate_round(detected_groups, hand_model.tiles, target_score)
+	return score_manager.evaluate_round(detected_groups, hand_model.tiles, target_score)
+
+func can_finish_round() -> bool:
+	return get_live_round_result().target_reached
+
+func get_owned_joker_cards() -> Array:
+	return score_manager.get_owned_joker_cards()
+
+func finish_round() -> RoundResult:
+	var result = get_live_round_result()
 	result.round_number = current_round
 	return result
 
@@ -151,4 +191,4 @@ func _cell_key(row: int, column: int) -> String:
 	return "%d:%d" % [row, column]
 
 func _calculate_target_score(round_number: int) -> int:
-	return 50 + ((round_number - 1) * 50)
+	return 30 + ((round_number - 1) * 20)

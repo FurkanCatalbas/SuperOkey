@@ -1,8 +1,52 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://crpt4lbv3ljyx"]
 
-[ext_resource type="Script" path="res://scripts/ui/hand_wiev.gd" id="1"]
-[ext_resource type="PackedScene" path="res://scenes/ui/TileWiev.tscn" id="2"]
+[ext_resource type="Script" uid="uid://bsvcpdrxm7c8x" path="res://scripts/ui/hand_wiev.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://4de06g0ujai2" path="res://assets/istaka/istaka.png" id="3"]
 
-[node name="HandView" type="HBoxContainer"]
+[node name="HandView" type="PanelContainer" unique_id=784740261]
+clip_contents = false
 script = ExtResource("1")
-tile_scene = ExtResource("2")
+rack_texture = ExtResource("3")
+
+[node name="RackMargin" type="MarginContainer" parent="." unique_id=1009376033]
+layout_mode = 2
+clip_contents = false
+mouse_filter = 2
+theme_override_constants/margin_left = 22
+theme_override_constants/margin_top = 0
+theme_override_constants/margin_right = 22
+theme_override_constants/margin_bottom = 36
+
+[node name="RackArt" type="TextureRect" parent="RackMargin" unique_id=1221054535]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="RackRows" type="VBoxContainer" parent="RackMargin" unique_id=132366172]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -72.0
+offset_bottom = 44.0
+grow_horizontal = 2
+grow_vertical = 2
+clip_contents = false
+mouse_filter = 2
+theme_override_constants/separation = 18
+
+[node name="TopRow" type="HBoxContainer" parent="RackMargin/RackRows" unique_id=1237802644]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="BottomRow" type="HBoxContainer" parent="RackMargin/RackRows" unique_id=800962118]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8

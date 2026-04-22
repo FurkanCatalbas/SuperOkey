@@ -1,6 +1,23 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://bs1bpiyf3f418"]
 
-[ext_resource type="Script" path="res://scripts/ui/tile_wiev.gd" id="1"]
+[ext_resource type="Script" uid="uid://v1gso28euurl" path="res://scripts/ui/tile_wiev.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://do557p4klvyr6" path="res://assets/tiles/red_6.png" id="2_1fmbw"]
 
-[node name="TileWiev" type="Button"]
+[node name="TileWiev" type="Button" unique_id=1624754778]
 script = ExtResource("1")
+fallback_texture = ExtResource("2_1fmbw")
+
+[node name="TileArt" type="TextureRect" parent="." unique_id=1398808096]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = -4.0
+offset_bottom = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+expand_mode = 1
+stretch_mode = 5

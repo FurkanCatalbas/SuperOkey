@@ -93,7 +93,7 @@ func _validate_run(group_name: String, tiles: Array) -> GroupValidationResult:
 			result.joker_notes.append("Joker -> %s %d" % [color, value])
 
 	result.is_valid = true
-	result.score = _run_score(tiles.size())
+	result.set_scoring(_run_score(tiles.size()), 0.2 if tiles.size() >= 5 else 0.0)
 	result.resolved_tiles = resolved
 	return result
 
@@ -113,7 +113,7 @@ func _build_all_joker_run(group_name: String, tiles: Array) -> GroupValidationRe
 		result.joker_notes.append("Joker -> %s %d" % [color, value])
 
 	result.is_valid = true
-	result.score = _run_score(tiles.size())
+	result.set_scoring(_run_score(tiles.size()), 0.2 if tiles.size() >= 5 else 0.0)
 	result.resolved_tiles = resolved
 	return result
 
@@ -165,7 +165,7 @@ func _validate_set(group_name: String, tiles: Array) -> GroupValidationResult:
 		result.joker_notes.append("Joker -> %s %d" % [resolved_color, value])
 
 	result.is_valid = true
-	result.score = 20 if tiles.size() == 4 else 15
+	result.set_scoring(_set_score(value, tiles.size()), 0.5 if tiles.size() == 4 else 0.0)
 	result.resolved_tiles = resolved
 	return result
 
@@ -187,26 +187,20 @@ func _validate_pair(group_name: String, tiles: Array) -> GroupValidationResult:
 		if a.value != b.value:
 			result.reason = "Pair values must match"
 			return result
-		if a.color == b.color:
-			result.reason = "Pair colors must differ"
+		if a.color != b.color:
+			result.reason = "Pair colors must match"
 			return result
 		value = a.value
 		resolved.append(_make_resolved_tile(a, a.color, a.value, false))
 		resolved.append(_make_resolved_tile(b, b.color, b.value, false))
 	else:
 		if a.is_joker and b.is_joker:
-			value = GameConstants.MIN_VALUE
-			resolved.append(_make_resolved_tile(a, GameConstants.COLORS[0], value, true))
-			resolved.append(_make_resolved_tile(b, GameConstants.COLORS[1], value, true))
-			result.joker_notes.append("Joker -> %s %d" % [GameConstants.COLORS[0], value])
-			result.joker_notes.append("Joker -> %s %d" % [GameConstants.COLORS[1], value])
+			result.reason = "Pair can use only one joker"
+			return result
 		else:
 			var non_joker: GameTileData = a if not a.is_joker else b
 			value = non_joker.value
-			var joker_color := _first_color_not_used([non_joker.color])
-			if joker_color == "":
-				result.reason = "Pair cannot resolve joker colors"
-				return result
+			var joker_color := non_joker.color
 			if a.is_joker:
 				resolved.append(_make_resolved_tile(a, joker_color, value, true))
 				resolved.append(_make_resolved_tile(b, b.color, value, false))
@@ -216,7 +210,7 @@ func _validate_pair(group_name: String, tiles: Array) -> GroupValidationResult:
 			result.joker_notes.append("Joker -> %s %d" % [joker_color, value])
 
 	result.is_valid = true
-	result.score = GameConstants.PAIR_SCORE
+	result.set_scoring(_pair_score(value, a.is_joker or b.is_joker))
 	result.resolved_tiles = resolved
 	return result
 
@@ -227,7 +221,36 @@ func _first_color_not_used(used_colors: Array) -> String:
 	return ""
 
 func _run_score(tile_count: int) -> int:
-	return GameConstants.BASE_RUN_SCORE + max(0, tile_count - 3) * GameConstants.LONG_COMBO_BONUS
+	match tile_count:
+		3:
+			return 20
+		4:
+			return 30
+		5:
+			return 45
+	return 45 + max(0, tile_count - 5) * 12
+
+func _set_score(value: int, tile_count: int) -> int:
+	var chips := 18
+	if value >= 5 and value <= 8:
+		chips = 28
+	elif value >= 9 and value <= 11:
+		chips = 40
+	elif value >= 12:
+		chips = 55
+	if tile_count == 4:
+		chips += 10
+	return chips
+
+func _pair_score(value: int, uses_joker: bool) -> int:
+	var chips := 8
+	if value >= 6 and value <= 9:
+		chips = 10
+	elif value >= 10:
+		chips = 14
+	if uses_joker:
+		chips -= 2
+	return chips
 
 func _make_resolved_tile(tile: GameTileData, resolved_color: String, resolved_value: int, joker: bool) -> Dictionary:
 	return {
