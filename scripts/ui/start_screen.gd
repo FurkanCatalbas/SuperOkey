@@ -1,9 +1,9 @@
 class_name StartScreen
 extends Control
 
-const GAME_SCENE_PATH := "res://scenes/game/Game.tscn"
+const GAME_SELECT_SCENE_PATH := "res://scenes/main/game_select_screen.tscn"
 
-@onready var play_button: TextureButton = $CenterBox/PlayButton
+@onready var play_button: TextureButton = $CenterBox/MenuStack/PlayButton
 
 func _ready() -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -11,7 +11,7 @@ func _ready() -> void:
 	play_button.pressed.connect(_on_play_button_pressed)
 
 func _on_play_button_pressed() -> void:
-	get_tree().change_scene_to_file(GAME_SCENE_PATH)
+	get_tree().change_scene_to_file(GAME_SELECT_SCENE_PATH)
 
 func _apply_styles() -> void:
 	play_button.custom_minimum_size = Vector2.ZERO

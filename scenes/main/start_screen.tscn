@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://cm4evtwmp5nn0"]
 
 [ext_resource type="Script" uid="uid://byhjpgb7ggdm" path="res://scripts/ui/start_screen.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://cktn7cu1uyx5r" path="res://assets/background/login_background.png" id="2_8bt6j"]
 [ext_resource type="Texture2D" uid="uid://oxcjtg3rlyhv" path="res://assets/button/oyna-button.png" id="2_58f5j"]
+[ext_resource type="Texture2D" uid="uid://u80o8e7o2ltw" path="res://assets/background/login_background.jpeg" id="2_nkrfi"]
 [ext_resource type="Texture2D" uid="uid://dio0qjatatp0u" path="res://assets/button/oyna_button_hover.png" id="4_nkrfi"]
 
 [node name="StartScreen" type="Control" unique_id=478023823]
@@ -22,7 +22,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-texture = ExtResource("2_8bt6j")
+texture = ExtResource("2_nkrfi")
 expand_mode = 1
 stretch_mode = 6
 
@@ -35,8 +35,12 @@ offset_top = 500.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="PlayButton" type="TextureButton" parent="CenterBox" unique_id=1179637644]
+[node name="MenuStack" type="VBoxContainer" parent="CenterBox" unique_id=1917937315]
 layout_mode = 2
-scale = Vector2(1.6, 1.6)
+theme_override_constants/separation = 44
+alignment = 1
+
+[node name="PlayButton" type="TextureButton" parent="CenterBox/MenuStack" unique_id=1179637644]
+layout_mode = 2
 texture_normal = ExtResource("2_58f5j")
 texture_hover = ExtResource("4_nkrfi")

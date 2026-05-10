@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cktn7cu1uyx5r"
-path="res://.godot/imported/login_background.png-d17293cadea13112ae1ac9e367edb010.ctex"
+uid="uid://btc06j0bnrk42"
+path="res://.godot/imported/white4.png-de40571251ed0691f4dc33ddcbcfb4da.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/background/login_background.png"
-dest_files=["res://.godot/imported/login_background.png-d17293cadea13112ae1ac9e367edb010.ctex"]
+source_file="res://assets/cards/poker/white4.png"
+dest_files=["res://.godot/imported/white4.png-de40571251ed0691f4dc33ddcbcfb4da.ctex"]
 
 [params]
 
